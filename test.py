@@ -34,6 +34,7 @@ dependencies = [
     'numpy',
     'mxnet==1.*',
     'torch',
+    'paddlepaddle',
     'tensorflow',
     'chainer',
     'jax',

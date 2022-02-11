@@ -559,3 +559,57 @@ class KerasBackend(AbstractBackend):
     def layers(self):
         from .layers import keras
         return keras
+
+
+class PaddleBackend(AbstractBackend):
+    framework_name = 'paddle'
+
+    def __init__(self):
+        import paddle
+        self.paddle = paddle
+
+    def is_appropriate_type(self, tensor):
+        return isinstance(tensor, self.paddle.Tensor)
+
+    def from_numpy(self, x):
+        variable = self.paddle.to_tensor(x)
+        if self.is_float_type(variable):
+            # attach grad only to floating types
+            variable.stop_gradient = False
+        return variable
+
+    def to_numpy(self, x):
+        return x.detach().numpy()
+
+    def arange(self, start, stop):
+        return self.paddle.arange(start, stop, dtype=self.paddle.int64)
+
+    def shape(self, x):
+        """shape should return a tuple with integers or "shape symbols" (which will evaluate to actual size)"""
+        return tuple(x.shape)
+
+    def reshape(self, x, shape):
+        if shape == []:
+            shape = [1]
+        return self.paddle.reshape(x, shape)
+
+    def transpose(self, x, axes):
+        if axes == []:
+            axes = [0]
+        return self.paddle.transpose(x, axes)
+
+    def stack_on_zeroth_dimension(self, tensors: list):
+        return self.paddle.stack(tensors)
+
+    def tile(self, x, repeats):
+        return self.paddle.tile(x, repeats)
+
+    def add_axis(self, x, new_position):
+        return self.paddle.unsqueeze(x, new_position)
+
+    def is_float_type(self, x):
+        return x.dtype in [self.paddle.float16, self.paddle.float32, self.paddle.float64]
+
+    def layers(self):
+        from .layers import paddle
+        return paddle
