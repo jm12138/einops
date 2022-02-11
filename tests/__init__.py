@@ -30,6 +30,7 @@ def collect_test_backends(symbolic=False, layers=False):
                 _backends.GluonBackend,
                 _backends.ChainerBackend,
                 _backends.TensorflowBackend,
+                _backends.PaddleBackend,
             ]
             if not skip_cupy:
                 backend_types += [_backends.CupyBackend]
